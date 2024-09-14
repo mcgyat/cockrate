@@ -17,32 +17,37 @@
         }
 
         function rateAbnormalities(deg) {
-            switch (deg) {
-                case 0: return 1.5;
-                case 1: return 1.;
-                case 2: return 0.2;
-                default: throw new Error('Invalid degree of abnormalities');
-            }
+            return [1.5, 1., 0.2][deg];
         }
 
         function rateAesthetic(aesthetic) {
-            return [0.3,0.5,0.7,0.9,1.,1.2,1.5,2.2,3.][aesthetic-1];
+            return [0.1, 0.2, 0.5, 0.8, 1., 1.2, 1.5, 2.2, 3.][aesthetic];
         }
 
         function rateBalls(size) {
-            return ((size%4+2)/4.-1.)*0.7+1.;
+            return [0.1, 0.7, 1., 1.2, 0.4][size];
         }
 
         function rateVeins(veins) {
-            return ((veins+2)/4.-1.)*0.5+1.;
+            return [0.8, 0.9, 1., 1.1, 1.3][veins];
         }
 
-        function score(len, abnormalities, aesthetic, balls, veins) {
+        function rateCurve(curve) {
+            return [1., 1.3, 0.1][curve];
+        }
+
+        function rateScent(scent) {
+            return [0.1, 0.5, 1., 1.5][scent];
+        }
+
+        function score(len, abnormalities, aesthetic, balls, veins, curve, scent) {
             return rateLength(len)*
                    rateAbnormalities(abnormalities)*
                    rateAesthetic(aesthetic)*
                    rateBalls(balls)*
-                   rateVeins(veins);
+                   rateVeins(veins)*
+                   rateCurve(curve)*
+                   rateScent(scent);
         }
 
         function calculateScore() {
@@ -51,25 +56,38 @@
             const aesthetic = parseInt(document.querySelector('input[name="aesthetic"]:checked').value);
             const balls = parseInt(document.querySelector('input[name="balls"]:checked').value);
             const veins = parseInt(document.querySelector('input[name="veins"]:checked').value);
+            const curve = parseInt(document.querySelector('input[name="curve"]:checked').value);
+            const scent = parseInt(document.querySelector('input[name="scent"]:checked').value);
 
-            const result = score(len, abnormalities, aesthetic, balls, veins);
+            const result = score(len, abnormalities, aesthetic, balls, veins, curve, scent);
             if (!isNaN(result)) {
                 var grade;
                 if (result<0.05) {
                     grade='F';
-                    document.getElementById('desc').textContent = 'Just chop it off...';
-                } else if (result<0.6) {
+                    if (len>12.) {
+                        document.getElementById('desc').textContent = 'Your cock is not that long.';
+                    } else {
+                        document.getElementById('desc').textContent = 'Just chop it off...';
+                    }
+                } else if (result<0.8) {
                     grade='D';
-                    document.getElementById('desc').textContent = 'You should be ashamed of your cock.';
-                } else if (result<1.5) {
+                    if (len>12.) {
+                        document.getElementById('desc').textContent = 'Your cock is not that long.';
+                    } else {
+                        document.getElementById('desc').textContent = 'You should be ashamed of your cock.';
+                    }
+                } else if (result<2.) {
                     grade='C';
                     document.getElementById('desc').textContent = 'Overall, your cock is about average.';
-                } else if (result<5.) {
+                } else if (result<6.5) {
                     grade='B';
                     document.getElementById('desc').textContent = 'Overall, your cock is pretty decent.';
-                } else {
+                } else if (result<24.) {
                     grade='A';
                     document.getElementById('desc').textContent = 'You have a fantastic cock.';
+                } else {
+                    grade='S';
+                    document.getElementById('desc').textContent = 'Your cock is one of a kind.';
                 }
 
                 document.getElementById('result').textContent = "VERDICT: "+grade+"-tier";
@@ -86,32 +104,32 @@
 
     <label for="abnormalities">Abnormalities</label><br>
     <input type="radio" name="abnormalities" value="0">
-    <label for="none">None</label><br>
+    <label for="none">None at all</label><br>
     <input type="radio" name="abnormalities" value="1">
-    <label for="minor">Minor</label><br>
+    <label for="minor">Slight defects</label><br>
     <input type="radio" name="abnormalities" value="2">
-    <label for="major">Major</label><br>
+    <label for="major">Significant deformity</label><br>
 
     <br><br>
 
     <label for="aesthetic">Aesthetic</label><br>
+    <input type="radio" name="aesthetic" value="0">
+    <label for="major">Horrifying</label><br>
     <input type="radio" name="aesthetic" value="1">
-    <label for="major">Just chop it off</label><br>
-    <input type="radio" name="aesthetic" value="2">
     <label for="major">Gross</label><br>
-    <input type="radio" name="aesthetic" value="3">
+    <input type="radio" name="aesthetic" value="2">
     <label for="major">Ugly but usable</label><br>
-    <input type="radio" name="aesthetic" value="4">
+    <input type="radio" name="aesthetic" value="3">
     <label for="major">Kind of mediocre</label><br>
-    <input type="radio" name="aesthetic" value="5">
+    <input type="radio" name="aesthetic" value="4">
     <label for="major">Normal</label><br>
-    <input type="radio" name="aesthetic" value="6">
+    <input type="radio" name="aesthetic" value="5">
     <label for="major">A bit better than normal</label><br>
-    <input type="radio" name="aesthetic" value="7">
+    <input type="radio" name="aesthetic" value="6">
     <label for="major">Nice one</label><br>
-    <input type="radio" name="aesthetic" value="8">
+    <input type="radio" name="aesthetic" value="7">
     <label for="major">Cockalicious</label><br>
-    <input type="radio" name="aesthetic" value="9">
+    <input type="radio" name="aesthetic" value="8">
     <label for="major">Perfect</label><br>
 
     <br><br>
@@ -141,6 +159,28 @@
     <label for="major">Healthy pumper</label><br>
     <input type="radio" name="veins" value="4">
     <label for="major">Juicer</label><br>
+
+    <br><br>
+
+    <label for="curve">Curvature</label><br>
+    <input type="radio" name="curve" value="0">
+    <label for="major">Straight</label><br>
+    <input type="radio" name="curve" value="1">
+    <label for="major">Slight curve</label><br>
+    <input type="radio" name="curve" value="2">
+    <label for="major">Right angle</label><br>
+
+    <br><br>
+
+    <label for="scent">Scent</label><br>
+    <input type="radio" name="scent" value="0">
+    <label for="major">Unbearable</label><br>
+    <input type="radio" name="scent" value="1">
+    <label for="major">A little fishy</label><br>
+    <input type="radio" name="scent" value="2">
+    <label for="major">Acceptable</label><br>
+    <input type="radio" name="scent" value="3">
+    <label for="major">Delightful</label><br>
 
     <br><br>
 
