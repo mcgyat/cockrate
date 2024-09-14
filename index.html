@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rating Calculator</title>
+    <script>
+        function normal(mean, sd, x) {
+            return 1.0/Math.sqrt(2.*Math.PI*sd*sd)*
+                   Math.exp(-(x-mean)*(x-mean)/(2.0*sd*sd));
+        }
+
+        function rateLength(len) {
+            const mean=8;
+            const sd=2.6;
+            return 2.*normal(mean,sd,len)/normal(mean,sd,mean);
+        }
+
+        function rateAbnormalities(deg) {
+            switch (deg) {
+                case 0: return 1.5;
+                case 1: return 1.;
+                case 2: return 0.2;
+                default: throw new Error('Invalid degree of abnormalities');
+            }
+        }
+
+        function rateAesthetic(aesthetic) {
+            return [0.3,0.5,0.7,0.9,1.,1.2,1.5,2.2,3.][aesthetic-1];
+        }
+
+        function rateBalls(size) {
+            return (size%4+2)/4.;
+        }
+
+        function rateVeins(veins) {
+            return (veins+2)/4.;
+        }
+
+        function score(len, abnormalities, aesthetic, balls, veins) {
+            return rateLength(len)*
+                   rateAbnormalities(abnormalities)*
+                   rateAesthetic(aesthetic)*
+                   rateBalls(balls)*
+                   rateVeins(veins);
+        }
+
+        function calculateScore() {
+            const len = parseFloat(document.getElementById('len').value);
+            const abnormalities = parseInt(document.querySelector('input[name="abnormalities"]:checked').value);
+            const aesthetic = parseInt(document.querySelector('input[name="aesthetic"]:checked').value);
+            const balls = parseInt(document.querySelector('input[name="balls"]:checked').value);
+            const veins = parseInt(document.querySelector('input[name="veins"]:checked').value);
+
+            const result = score(len, abnormalities, aesthetic, balls, veins);
+            if (!isNaN(result)) {
+                var grade;
+                if (result<0.05) {
+                    grade='F';
+                    document.getElementById('desc').textContent = 'Just chop it off...';
+                } else if (result<0.6) {
+                    grade='D';
+                    document.getElementById('desc').textContent = 'You should be ashamed of your cock.';
+                } else if (result<1.5) {
+                    grade='C';
+                    document.getElementById('desc').textContent = 'Overall, your cock is about average.';
+                } else if (result<5.) {
+                    grade='B';
+                    document.getElementById('desc').textContent = 'Overall, your cock is pretty decent.';
+                } else {
+                    grade='A';
+                    document.getElementById('desc').textContent = 'You have a fantastic cock.';
+                }
+
+                document.getElementById('result').textContent = "VERDICT: "+grade+"-tier";
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Rate My Cock</h1>
+    <label for="len">Length (inches):</label>
+    <input type="number" id="len" step="0.1"><br>
+
+    <br><br>
+
+    <label for="abnormalities">Abnormalities</label><br>
+    <input type="radio" name="abnormalities" value="0">
+    <label for="none">None</label><br>
+    <input type="radio" name="abnormalities" value="1">
+    <label for="minor">Minor</label><br>
+    <input type="radio" name="abnormalities" value="2">
+    <label for="major">Major</label><br>
+
+    <br><br>
+
+    <label for="aesthetic">Aesthetic</label><br>
+    <input type="radio" name="aesthetic" value="1">
+    <label for="major">Just chop it off</label><br>
+    <input type="radio" name="aesthetic" value="2">
+    <label for="major">Gross</label><br>
+    <input type="radio" name="aesthetic" value="3">
+    <label for="major">Ugly but usable</label><br>
+    <input type="radio" name="aesthetic" value="4">
+    <label for="major">Kind of mediocre</label><br>
+    <input type="radio" name="aesthetic" value="5">
+    <label for="major">Normal</label><br>
+    <input type="radio" name="aesthetic" value="6">
+    <label for="major">A bit better than normal</label><br>
+    <input type="radio" name="aesthetic" value="7">
+    <label for="major">Nice one</label><br>
+    <input type="radio" name="aesthetic" value="8">
+    <label for="major">Cockalicious</label><br>
+    <input type="radio" name="aesthetic" value="9">
+    <label for="major">Perfect</label><br>
+
+    <br><br>
+
+    <label for="balls">Balls</label><br>
+    <input type="radio" name="balls" value="0">
+    <label for="major">Nonexistent</label><br>
+    <input type="radio" name="balls" value="1">
+    <label for="major">Tiny</label><br>
+    <input type="radio" name="balls" value="2">
+    <label for="major">Normal</label><br>
+    <input type="radio" name="balls" value="3">
+    <label for="major">Big swingers</label><br>
+    <input type="radio" name="balls" value="4">
+    <label for="major">Possible cancer</label><br>
+
+    <br><br>
+
+    <label for="veins">Veins</label><br>
+    <input type="radio" name="veins" value="0">
+    <label for="major">Invisible</label><br>
+    <input type="radio" name="veins" value="1">
+    <label for="major">Slight pumper</label><br>
+    <input type="radio" name="veins" value="2">
+    <label for="major">Normal</label><br>
+    <input type="radio" name="veins" value="3">
+    <label for="major">Healthy pumper</label><br>
+    <input type="radio" name="veins" value="4">
+    <label for="major">Juicer</label><br>
+
+    <br><br>
+
+    <button onclick="calculateScore()">Calculate</button>
+    <p id="result"></p>
+
+    <p id="desc"></p>
+</body>
+</html>
