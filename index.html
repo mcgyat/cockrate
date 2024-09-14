@@ -30,11 +30,11 @@
         }
 
         function rateBalls(size) {
-            return (size%4+2)/4.;
+            return ((size%4+2)/4.-1.)*0.7+1.;
         }
 
         function rateVeins(veins) {
-            return (veins+2)/4.;
+            return ((veins+2)/4.-1.)*0.5+1.;
         }
 
         function score(len, abnormalities, aesthetic, balls, veins) {
